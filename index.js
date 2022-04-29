@@ -2,11 +2,18 @@ const express = require('express');
 const cors = require('cors');
 const axios = require('axios');
 const dotenv = require('dotenv');
+const path = require('path');
 const app = express();
 
 dotenv.config();
 
 app.use(cors());
+
+app.use(express.static('public'));
+
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname + '/index.html'));
+});
 
 app.get('/word', async (req, res) => {
   const options = {

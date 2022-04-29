@@ -83,17 +83,20 @@ keys.forEach((key) => {
 });
 
 const handleClick = (key) => {
-  if (key === '<<') {
-    handleDeleteLetter();
-    return;
-  }
+  if (!isGameOver) {
+    if (key === '<<') {
+      handleDeleteLetter();
+      return;
+    }
 
-  if (key === 'ENTER') {
-    handleCheckRow();
-    return;
-  }
+    if (key === 'ENTER') {
+      handleCheckRow();
+      return;
+    }
 
-  handleAddLetter(key);
+    handleAddLetter(key);
+  } else {
+  }
 };
 
 const handleAddLetter = (letter) => {
