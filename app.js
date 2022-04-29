@@ -33,7 +33,18 @@ const keys = [
   '<<',
 ];
 
-const wordle = 'GREAT';
+let wordle;
+
+const getRandomWordle = () => {
+  fetch('http://localhost:8000/word')
+    .then((res) => res.json())
+    .then((data) => {
+      wordle = data.toUpperCase();
+    })
+    .catch((err) => console.log(err));
+};
+
+getRandomWordle();
 
 const guessRows = [
   ['', '', '', '', ''],
@@ -113,22 +124,32 @@ const handleCheckRow = () => {
   const guess = guessRows[currentRow].join('');
 
   if (currentTile > 4) {
-    handleFlipTile();
-    if (wordle === guess) {
-      handleShowMessage('SUPER!');
-      isGameOver = true;
-      return;
-    } else {
-      if (currentRow >= 5) {
-        isGameOver = true;
-        handleShowMessage('Game Over');
-        return;
-      }
-      if (currentRow < 5) {
-        currentRow++;
-        currentTile = 0;
-      }
-    }
+    fetch(`http://localhost:8000/check?word=${guess}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data == 'Entry word not found') {
+          handleShowMessage('Entry word not found');
+          return;
+        } else {
+          handleFlipTile();
+          if (wordle === guess) {
+            handleShowMessage('SUPER!');
+            isGameOver = true;
+            return;
+          } else {
+            if (currentRow >= 5) {
+              isGameOver = true;
+              handleShowMessage('Game Over');
+              return;
+            }
+            if (currentRow < 5) {
+              currentRow++;
+              currentTile = 0;
+            }
+          }
+        }
+      })
+      .catch((err) => console.log(err));
   }
 };
 
@@ -173,6 +194,6 @@ const handleFlipTile = () => {
       tile.classList.add('flip');
       tile.classList.add(guess[tileIdx].color);
       handleAddColorToKey(guess[tileIdx].letter, guess[tileIdx].color);
-    }, 500 * index);
+    }, 500 * tileIdx);
   });
 };
